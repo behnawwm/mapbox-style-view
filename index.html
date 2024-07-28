@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Upload and View Mapbox Style</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        #upload-form { position: absolute; top: 10px; left: 10px; background: white; padding: 10px; z-index: 1; }
+    </style>
+</head>
+<body>
+    <div id="upload-form">
+        <input type="file" id="file-input" accept=".json" />
+    </div>
+    <div id="map"></div>
+
+    <script>
+        // Set your Mapbox access token here
+        mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
+
+        // Enable RTL text plugin
+        mapboxgl.setRTLTextPlugin(
+            'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
+            null,
+            true // Lazy load the plugin
+        );
+
+        // Initialize the map with the specified center and zoom level
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [51.375735903316745, 35.789208340612284],
+            zoom: 15
+        });
+
+        // Function to handle file upload
+        document.getElementById('file-input').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            if (file && file.type === 'application/json') {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var style = JSON.parse(e.target.result);
+                    map.setStyle(style);
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Please upload a valid JSON file.');
+            }
+        });
+    </script>
+</body>
+</html>
